@@ -1,47 +1,62 @@
-package Queue;
+package Stack;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Stack;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        Queue<Integer> cola = new LinkedList<>();
+        Stack<Character> pila = new Stack<>(); // aquí guardaremos los símbolos
 
-        System.out.println("¿Cuantos numeros quieres meter en la cola?");
-        int n = sc.nextInt();
+        System.out.println("Escribe una expresion con (), {}, []:");
+        String expresion = sc.nextLine();
 
-        System.out.println("Escribe los numeros:");
-        for (int i = 0; i < n; i++) {
-            int num = sc.nextInt();
-            cola.add(num); //Agregamos a la cola
+        boolean balanceado = true; // asumimos que está bien hasta que se demuestre lo contrario
+
+        // recorremos cada caracter de la expresion
+        for (int i = 0; i < expresion.length(); i++) {
+            char c = expresion.charAt(i);
+
+            // si es de apertura lo metemos a la pila
+            if (c == '(' || c == '{' || c == '[') {
+                pila.push(c);
+            } 
+            // si es de cierre revisamos la pila
+            else if (c == ')' || c == '}' || c == ']') {
+                if (pila.isEmpty()) {
+                    balanceado = false; // no hay con qué cerrar
+                    break;
+                } else {
+                    char tope = pila.pop(); // quitamos el último abierto
+
+                    // comprobamos que coincidan
+                    if (c == ')' && tope != '(') {
+                        balanceado = false;
+                        break;
+                    }
+                    if (c == '}' && tope != '{') {
+                        balanceado = false;
+                        break;
+                    }
+                    if (c == ']' && tope != '[') {
+                        balanceado = false;
+                        break;
+                    }
+                }
+            }
         }
 
-        System.out.println("Cola original: " + cola);
+        // al final, si la pila no está vacía, significa que quedaron abiertos sin cerrar
+        if (!pila.isEmpty()) {
+            balanceado = false;
+        }
 
-        invertir(cola); 
-
-        System.out.println("Cola invertida: " + cola);
+        if (balanceado) {
+            System.out.println("La expresion esta balanceada :)");
+        } else {
+            System.out.println("La expresion NO esta balanceada :(");
+        }
 
         sc.close();
     }
-
-    
-    public static void invertir(Queue<Integer> cola) {
-        
-        if (cola.isEmpty()) {
-            return;
-        }
-
-        // sacamos el primer elemento
-        int frente = cola.remove();
-
-        
-        invertir(cola);
-
-        // al volver, metemos el elemento al final
-        cola.add(frente);
-    }
 }
-
